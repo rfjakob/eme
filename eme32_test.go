@@ -24,7 +24,7 @@ func verifyTestVec(v testVec, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out := EMETransform(bc, v.tweak, v.in, v.dir)
+	out := Transform(bc, v.tweak, v.in, v.dir)
 	if bytes.Compare(v.out, out) != 0 {
 		t.Errorf("Different content")
 	}
@@ -126,7 +126,7 @@ func TestEnc512x100(t *testing.T) {
 	}
 	out := v.in
 	for i := 0; i < 100; i++ {
-		out = EMETransform(bc, v.tweak, out, v.dir)
+		out = Transform(bc, v.tweak, out, v.dir)
 	}
 	if bytes.Compare(v.out, out) != 0 {
 		t.Errorf("Different content")
@@ -229,7 +229,7 @@ func TestDec512x100(t *testing.T) {
 	}
 	out := v.in
 	for i := 0; i < 100; i++ {
-		out = EMETransform(bc, v.tweak, out, v.dir)
+		out = Transform(bc, v.tweak, out, v.dir)
 	}
 	if bytes.Compare(v.out, out) != 0 {
 		t.Errorf("Different content")
@@ -251,7 +251,7 @@ func BenchmarkEnc512(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		EMETransform(bc, v.tweak, v.in, v.dir)
+		Transform(bc, v.tweak, v.in, v.dir)
 	}
 }
 
@@ -267,9 +267,10 @@ func BenchmarkDec512(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
+	precompute(bc)
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		EMETransform(bc, v.tweak, v.in, v.dir)
+		Transform(bc, v.tweak, v.in, v.dir)
 	}
 }

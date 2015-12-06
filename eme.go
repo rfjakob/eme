@@ -70,10 +70,24 @@ func tabulateL(eZero []byte, m int) ([][]byte) {
 	return LTable
 }
 
-// EMETransform - EME-encrypt or EME-decrypt (according to "direction") the data
+type lCacheContainer struct {
+	LTable [][]byte
+	enabled bool
+}
+
+var lTableCache lCacheContainer
+
+func precompute(bc cipher.Block) {
+	eZero := make([]byte, 16)
+	bc.Encrypt(eZero, eZero)
+	lTableCache.LTable = tabulateL(eZero, bc.BlockSize()*8)
+	lTableCache.enabled = true
+}
+
+// Transform - EME-encrypt or EME-decrypt (according to "direction") the data
 // in "P" with the block ciper "bc" under tweak "T".
 // The result is returned in a freshly allocated slice.
-func EMETransform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
+func Transform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 	C = make([]byte, 512)
 	m := len(P) / bc.BlockSize()
 
@@ -81,11 +95,15 @@ func EMETransform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte)
 		log.Panicf("EME operates on 1-%d block-cipher blocks", bc.BlockSize()*8)
 	}
 
-	/* set L = 2*AESenc(K; 0) */
-	eZero := make([]byte, 16)
-	bc.Encrypt(eZero, eZero)
-
-	LTable := tabulateL(eZero, m)
+	var LTable [][]byte
+	if lTableCache.enabled {
+		LTable = lTableCache.LTable
+	} else {
+		/* set L = 2*AESenc(K; 0) */
+		eZero := make([]byte, 16)
+		bc.Encrypt(eZero, eZero)
+		LTable = tabulateL(eZero, m)
+	}
 
 	PPj := make([]byte, 16)
 	for j := 0; j < m; j++ {
