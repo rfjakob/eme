@@ -113,3 +113,42 @@ func TestDec512(t *testing.T) {
 		0x3A, 0xF8, 0x04, 0xA5, 0xC9, 0xDA, 0xB3, 0x44, 0x20, 0xF2, 0x60, 0xE4, 0xBD, 0x84, 0x08, 0x29}
 	verifyTestVec(v, t)
 }
+
+
+func BenchmarkEnc512(b *testing.B) {
+	var v testVec
+	v.dir = directionEncrypt
+	v.key = make([]byte, 32)
+	v.tweak = make([]byte, 16)
+	v.in = make([]byte, 512)
+	b.SetBytes(int64(len(v.in)))
+
+	bc, err := aes.NewCipher(v.key)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		TransformEME32(bc, v.tweak, v.in, v.dir)
+	}
+}
+
+func BenchmarkDec512(b *testing.B) {
+	var v testVec
+	v.dir = directionDecrypt
+	v.key = make([]byte, 32)
+	v.tweak = make([]byte, 16)
+	v.in = make([]byte, 512)
+	b.SetBytes(int64(len(v.in)))
+
+	bc, err := aes.NewCipher(v.key)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		TransformEME32(bc, v.tweak, v.in, v.dir)
+	}
+}
