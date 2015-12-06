@@ -57,6 +57,19 @@ func bcTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
 	}
 }
 
+func tabulateL(eZero []byte, m int) ([][]byte) {
+	LTable := make([][]byte, m)
+	buf := make([]byte, len(LTable)*16)
+	Li := make([]byte, 16)
+	copy(Li, eZero)
+	for i := 0; i < len(LTable); i++ {
+		multByTwo(Li, Li)
+		LTable[i] = buf[i*16:(i+1)*16]
+		copy(LTable[i], Li)
+	}
+	return LTable
+}
+
 // EMETransform - EME-encrypt or EME-decrypt (according to "direction") the data
 // in "P" with the block ciper "bc" under tweak "T".
 // The result is returned in a freshly allocated slice.
@@ -69,19 +82,18 @@ func EMETransform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte)
 	}
 
 	/* set L = 2*AESenc(K; 0) */
-	zero := make([]byte, 16)
-	bc.Encrypt(zero, zero)
-	L := make([]byte, 16)
-	multByTwo(L, zero)
+	eZero := make([]byte, 16)
+	bc.Encrypt(eZero, eZero)
+
+	LTable := tabulateL(eZero, m)
 
 	PPj := make([]byte, 16)
 	for j := 0; j < m; j++ {
 		Pj := P[j*16 : (j+1)*16]
 		/* PPj = 2**(j-1)*L xor Pj */
-		xorBlocks(PPj, Pj, L)
+		xorBlocks(PPj, Pj, LTable[j])
 		/* PPPj = AESenc(K; PPj) */
 		bcTransform(C[j*16:(j+1)*16], PPj, direction, bc)
-		multByTwo(L, L)
 	}
 
 	/* MP =(xorSum PPPj) xor T */
@@ -114,14 +126,11 @@ func EMETransform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte)
 	}
 	copy(C[0:16], CCC1)
 
-	/* reset L = 2*AESenc(K; 0) */
-	multByTwo(L, zero)
 	for j := 0; j < m; j++ {
 		/* CCj = AES-enc(K; CCCj) */
 		bcTransform(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
 		/* Cj = 2**(j-1)*L xor CCj */
-		xorBlocks(C[j*16:(j+1)*16], C[j*16:(j+1)*16], L)
-		multByTwo(L, L)
+		xorBlocks(C[j*16:(j+1)*16], C[j*16:(j+1)*16], LTable[j])
 	}
 
 	return C
