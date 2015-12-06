@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	directionEncrypt = iota
-	directionDecrypt
+	directionEncrypt = true
+	directionDecrypt = false
 )
 
 // multByTwo - GF multiplication as specified in the EME-32 draft
@@ -45,7 +45,7 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 
 // aesTransform - encrypt or decrypt (according to "direction") using block
 // cipher "bc" (typically AES)
-func aesTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
+func aesTransform(dst []byte, src []byte, direction bool, bc cipher.Block) {
 	if direction == directionEncrypt {
 		bc.Encrypt(dst, src)
 		return
@@ -57,52 +57,66 @@ func aesTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
 	}
 }
 
-func tabulateL(eZero []byte, m int) ([][]byte) {
-	LTable := make([][]byte, m)
-	buf := make([]byte, len(LTable)*16)
+// tabulateL - calculate L_i for messages up to a length of m cipher blocks
+func tabulateL(bc cipher.Block, m int) [][]byte {
+	/* set L0 = 2*AESenc(K; 0) */
+	eZero := make([]byte, 16)
 	Li := make([]byte, 16)
-	copy(Li, eZero)
-	for i := 0; i < len(LTable); i++ {
+	bc.Encrypt(Li, eZero)
+
+	LTable := make([][]byte, m)
+	// Allocate pool once and slice into m pieces in the loop
+	pool := make([]byte, m*16)
+	for i := 0; i < m; i++ {
 		multByTwo(Li, Li)
-		LTable[i] = buf[i*16:(i+1)*16]
+		LTable[i] = pool[i*16 : (i+1)*16]
 		copy(LTable[i], Li)
 	}
 	return LTable
 }
 
 type lCacheContainer struct {
-	LTable [][]byte
+	LTable  [][]byte
 	enabled bool
+}
+
+// precompute LTable for maximum length
+// Note that LTable depends on the AES key, so you must run precompute or clear
+// when the key changes.
+func (lc *lCacheContainer) precompute(bc cipher.Block) {
+	lc.LTable = tabulateL(bc, 16*8) // 16*8 = maximum length
+	lc.enabled = true
+}
+
+// clear LTable cache
+func (lc *lCacheContainer) clear() {
+	lc.enabled = false
 }
 
 var lTableCache lCacheContainer
 
-func precompute(bc cipher.Block) {
-	eZero := make([]byte, 16)
-	bc.Encrypt(eZero, eZero)
-	lTableCache.LTable = tabulateL(eZero, bc.BlockSize()*8)
-	lTableCache.enabled = true
-}
-
 // Transform - EME-encrypt or EME-decrypt (according to "direction") the data
 // in "P" with the block ciper "bc" under tweak "T".
 // The result is returned in a freshly allocated slice.
-func Transform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
-	C = make([]byte, 512)
-	m := len(P) / bc.BlockSize()
-
-	if m == 0 || m >= bc.BlockSize()*8 {
-		log.Panicf("EME operates on 1-%d block-cipher blocks", bc.BlockSize()*8)
+func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
+	if bc.BlockSize() != 16 {
+		log.Panicf("Using a block size other than 16 is not implemented")
 	}
+	if len(P)%16 != 0 {
+		log.Panicf("Data length %d is not a multiple of 16", len(P))
+	}
+	m := len(P) / 16
+	if m == 0 || m > 16*8 {
+		log.Panicf("EME operates on 1-%d block-cipher blocks", 16*8)
+	}
+
+	C = make([]byte, len(P))
 
 	var LTable [][]byte
 	if lTableCache.enabled {
 		LTable = lTableCache.LTable
 	} else {
-		/* set L = 2*AESenc(K; 0) */
-		eZero := make([]byte, 16)
-		bc.Encrypt(eZero, eZero)
-		LTable = tabulateL(eZero, m)
+		LTable = tabulateL(bc, m)
 	}
 
 	PPj := make([]byte, 16)

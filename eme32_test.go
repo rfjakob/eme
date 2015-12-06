@@ -1,14 +1,18 @@
 package eme
 
+// Test using EME-32 test vectors
+
 import (
 	"bytes"
 	"crypto/aes"
+	"encoding/hex"
+	"fmt"
 	"testing"
 )
 
 type testVec struct {
 	// direction
-	dir int
+	dir bool
 	// AES key
 	key []byte
 	// IV, in EME called tweak
@@ -24,9 +28,17 @@ func verifyTestVec(v testVec, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Transform and check expected data
 	out := Transform(bc, v.tweak, v.in, v.dir)
 	if bytes.Compare(v.out, out) != 0 {
-		t.Errorf("Different content")
+		fmt.Println(hex.EncodeToString(out))
+		t.Errorf("Different content in forward verify")
+	}
+	// Transform the other way and check that we get back the original data
+	in := Transform(bc, v.tweak, out, !v.dir)
+	if bytes.Compare(v.in, in) != 0 {
+		fmt.Println(hex.EncodeToString(out))
+		t.Errorf("Different content in reverse verify")
 	}
 }
 
@@ -236,6 +248,26 @@ func TestDec512x100(t *testing.T) {
 	}
 }
 
+func BenchmarkEnc512Precompute(b *testing.B) {
+	var v testVec
+	v.dir = directionEncrypt
+	v.key = make([]byte, 32)
+	v.tweak = make([]byte, 16)
+	v.in = make([]byte, 512)
+	b.SetBytes(int64(len(v.in)))
+
+	bc, err := aes.NewCipher(v.key)
+	if err != nil {
+		b.Fatal(err)
+	}
+	lTableCache.precompute(bc)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		Transform(bc, v.tweak, v.in, v.dir)
+	}
+	lTableCache.clear()
+}
+
 func BenchmarkEnc512(b *testing.B) {
 	var v testVec
 	v.dir = directionEncrypt
@@ -267,7 +299,6 @@ func BenchmarkDec512(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	precompute(bc)
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
