@@ -1,7 +1,6 @@
 package eme
 
 import (
-	"crypto/aes"
 	"crypto/cipher"
 	"log"
 )
@@ -54,17 +53,12 @@ func transformAES(dst []byte, src []byte, direction int, bc cipher.Block) {
 	}
 }
 
-func TransformEME32(K []byte, T []byte, P []byte, direction int) (C []byte) {
-	aesCipher, err := aes.NewCipher(K)
-	if err != nil {
-		panic(err)
-	}
-
+func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 	C = make([]byte, 512)
 
 	/* set L = 2*AESenc(K; 0) */
 	zero := make([]byte, 16)
-	aesCipher.Encrypt(zero, zero)
+	bc.Encrypt(zero, zero)
 	L := multByTwo(zero)
 
 	for j := 0; j < 32; j++ {
@@ -72,7 +66,7 @@ func TransformEME32(K []byte, T []byte, P []byte, direction int) (C []byte) {
 		/* PPj = 2**(j-1)*L xor Pj */
 		PPj := xorBlocks(Pj, L)
 		/* PPPj = AESenc(K; PPj) */
-		transformAES(C[j*16:(j+1)*16], PPj, direction, aesCipher)
+		transformAES(C[j*16:(j+1)*16], PPj, direction, bc)
 		L = multByTwo(L)
 	}
 
@@ -84,7 +78,7 @@ func TransformEME32(K []byte, T []byte, P []byte, direction int) (C []byte) {
 
 	/* MC = AESenc(K; MP) */
 	MC := make([]byte, 16)
-	transformAES(MC, MP, direction, aesCipher)
+	transformAES(MC, MP, direction, bc)
 
 	/* M = MP xor MC */
 	M := xorBlocks(MP, MC)
@@ -107,7 +101,7 @@ func TransformEME32(K []byte, T []byte, P []byte, direction int) (C []byte) {
 	L = multByTwo(zero)
 	for j := 0; j < 32; j++ {
 		/* CCj = AES-enc(K; CCCj) */
-		transformAES(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, aesCipher)
+		transformAES(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
 		/* Cj = 2**(j-1)*L xor CCj */
 		Cj := xorBlocks(C[j*16:(j+1)*16], L)
 		copy(C[j*16:(j+1)*16], Cj)

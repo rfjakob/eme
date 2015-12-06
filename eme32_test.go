@@ -2,25 +2,35 @@ package eme
 
 import (
 	"bytes"
+	"crypto/aes"
 	"testing"
 )
 
 type testVec struct {
-	dir   int
-	key   []byte
+	// direction
+	dir int
+	// AES key
+	key []byte
+	// IV, in EME called tweak
 	tweak []byte
-	in    []byte
-	out   []byte
+	// input data
+	in []byte
+	// expected output data
+	out []byte
 }
 
-func verifyTestVec(vec testVec, t *testing.T) {
-	out := TransformEME32(vec.key, vec.tweak, vec.in, vec.dir)
-	if bytes.Compare(vec.out, out) != 0 {
+func verifyTestVec(v testVec, t *testing.T) {
+	bc, err := aes.NewCipher(v.key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := TransformEME32(bc, v.tweak, v.in, v.dir)
+	if bytes.Compare(v.out, out) != 0 {
 		t.Errorf("Different content")
 	}
 }
 
-func TestEnc(t *testing.T) {
+func TestEnc512(t *testing.T) {
 	var v testVec
 	v.dir = directionEncrypt
 	v.key = make([]byte, 32)   // all-zero
@@ -62,7 +72,7 @@ func TestEnc(t *testing.T) {
 	verifyTestVec(v, t)
 }
 
-func TestDec(t *testing.T) {
+func TestDec512(t *testing.T) {
 	var v testVec
 	v.dir = directionDecrypt
 	v.key = make([]byte, 32)   // all-zero
