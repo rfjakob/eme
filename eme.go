@@ -1,3 +1,6 @@
+// EME (ECB-Mix-ECB) is a wide-block encryption mode presented in the 2003 paper
+// "A Parallelizable Enciphering Mode" by Halevi and Rogaway.
+// This is an implementation of EME in Go.
 package eme
 
 import (
@@ -10,6 +13,7 @@ const (
 	directionDecrypt
 )
 
+// multByTwo - GF multiplication as specified in the EME-32 draft
 func multByTwo(out []byte, in []byte) {
 	if len(in) != 16 {
 		panic("len must be 16")
@@ -39,7 +43,9 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 	}
 }
 
-func transformAES(dst []byte, src []byte, direction int, bc cipher.Block) {
+// bcTransform - encrypt or decrypt (according to "direction") using block
+// cipher "bc"
+func bcTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
 	if direction == directionEncrypt {
 		bc.Encrypt(dst, src)
 		return
@@ -51,7 +57,10 @@ func transformAES(dst []byte, src []byte, direction int, bc cipher.Block) {
 	}
 }
 
-func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
+// EMETransform - EME-encrypt or EME-decrypt (according to "direction") the data
+// in "P" with the block ciper "bc" under tweak "T".
+// The result is returned in a freshly allocated slice.
+func EMETransform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 	C = make([]byte, 512)
 	m := len(P) / bc.BlockSize()
 
@@ -71,7 +80,7 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 		/* PPj = 2**(j-1)*L xor Pj */
 		xorBlocks(PPj, Pj, L)
 		/* PPPj = AESenc(K; PPj) */
-		transformAES(C[j*16:(j+1)*16], PPj, direction, bc)
+		bcTransform(C[j*16:(j+1)*16], PPj, direction, bc)
 		multByTwo(L, L)
 	}
 
@@ -84,7 +93,7 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 
 	/* MC = AESenc(K; MP) */
 	MC := make([]byte, 16)
-	transformAES(MC, MP, direction, bc)
+	bcTransform(MC, MP, direction, bc)
 
 	/* M = MP xor MC */
 	M := make([]byte, 16)
@@ -109,7 +118,7 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 	multByTwo(L, zero)
 	for j := 0; j < m; j++ {
 		/* CCj = AES-enc(K; CCCj) */
-		transformAES(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
+		bcTransform(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
 		/* Cj = 2**(j-1)*L xor CCj */
 		xorBlocks(C[j*16:(j+1)*16], C[j*16:(j+1)*16], L)
 		multByTwo(L, L)

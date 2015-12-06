@@ -24,7 +24,7 @@ func verifyTestVec(v testVec, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	out := TransformEME32(bc, v.tweak, v.in, v.dir)
+	out := EMETransform(bc, v.tweak, v.in, v.dir)
 	if bytes.Compare(v.out, out) != 0 {
 		t.Errorf("Different content")
 	}
@@ -130,7 +130,7 @@ func BenchmarkEnc512(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		TransformEME32(bc, v.tweak, v.in, v.dir)
+		EMETransform(bc, v.tweak, v.in, v.dir)
 	}
 }
 
@@ -149,6 +149,6 @@ func BenchmarkDec512(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		TransformEME32(bc, v.tweak, v.in, v.dir)
+		EMETransform(bc, v.tweak, v.in, v.dir)
 	}
 }
