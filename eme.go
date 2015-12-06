@@ -10,23 +10,23 @@ const (
 	directionDecrypt
 )
 
-func multByTwo(in []byte) (out []byte) {
+func multByTwo(out []byte, in []byte) {
 	if len(in) != 16 {
 		panic("len must be 16")
 	}
-	out = make([]byte, 16)
+	tmp := make([]byte, 16)
 
-	out[0] = 2 * in[0]
+	tmp[0] = 2 * in[0]
 	if in[15] >= 128 {
-		out[0] = out[0] ^ 135
+		tmp[0] = tmp[0] ^ 135
 	}
 	for j := 1; j < 16; j++ {
-		out[j] = 2 * in[j]
+		tmp[j] = 2 * in[j]
 		if in[j-1] >= 128 {
-			out[j] += 1
+			tmp[j] += 1
 		}
 	}
-	return out
+	copy(out, tmp)
 }
 
 func xorBlocks(out []byte, in1 []byte, in2 []byte) {
@@ -62,7 +62,8 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 	/* set L = 2*AESenc(K; 0) */
 	zero := make([]byte, 16)
 	bc.Encrypt(zero, zero)
-	L := multByTwo(zero)
+	L := make([]byte, 16)
+	multByTwo(L, zero)
 
 	PPj := make([]byte, 16)
 	for j := 0; j < m; j++ {
@@ -71,7 +72,7 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 		xorBlocks(PPj, Pj, L)
 		/* PPPj = AESenc(K; PPj) */
 		transformAES(C[j*16:(j+1)*16], PPj, direction, bc)
-		L = multByTwo(L)
+		multByTwo(L, L)
 	}
 
 	/* MP =(xorSum PPPj) xor T */
@@ -90,7 +91,7 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 	xorBlocks(M, MP, MC)
 	CCCj := make([]byte, 16)
 	for j := 1; j < m; j++ {
-		M = multByTwo(M)
+		multByTwo(M, M)
 		/* CCCj = 2**(j-1)*M xor PPPj */
 		xorBlocks(CCCj, C[j*16:(j+1)*16], M)
 		copy(C[j*16:(j+1)*16], CCCj)
@@ -105,13 +106,13 @@ func TransformEME32(bc cipher.Block, T []byte, P []byte, direction int) (C []byt
 	copy(C[0:16], CCC1)
 
 	/* reset L = 2*AESenc(K; 0) */
-	L = multByTwo(zero)
+	multByTwo(L, zero)
 	for j := 0; j < m; j++ {
 		/* CCj = AES-enc(K; CCCj) */
 		transformAES(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
 		/* Cj = 2**(j-1)*L xor CCj */
 		xorBlocks(C[j*16:(j+1)*16], C[j*16:(j+1)*16], L)
-		L = multByTwo(L)
+		multByTwo(L, L)
 	}
 
 	return C
