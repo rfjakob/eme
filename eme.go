@@ -1,8 +1,9 @@
 package eme
 
 import (
-	"log"
 	"crypto/aes"
+	"crypto/cipher"
+	"log"
 )
 
 const (
@@ -20,7 +21,7 @@ func multByTwo(in []byte) (out []byte) {
 	if in[15] >= 128 {
 		out[0] = out[0] ^ 135
 	}
-	for j := 1; j<16; j++ {
+	for j := 1; j < 16; j++ {
 		out[j] = 2 * in[j]
 		if in[j-1] >= 128 {
 			out[j] += 1
@@ -29,7 +30,7 @@ func multByTwo(in []byte) (out []byte) {
 	return out
 }
 
-func xorBlocks(in1 []byte, in2[]byte) (out []byte) {
+func xorBlocks(in1 []byte, in2 []byte) (out []byte) {
 	if len(in1) != len(in2) {
 		log.Panicf("len(in1)=%d is not equal to len(in2)=%d", len(in1), len(in2))
 	}
@@ -41,8 +42,19 @@ func xorBlocks(in1 []byte, in2[]byte) (out []byte) {
 	return out
 }
 
+func transformAES(dst []byte, src []byte, direction int, bc cipher.Block) {
+	if direction == directionEncrypt {
+		bc.Encrypt(dst, src)
+		return
+	} else if direction == directionDecrypt {
+		bc.Decrypt(dst, src)
+		return
+	} else {
+		log.Panicf("unknown direction %d", direction)
+	}
+}
 
-func EncryptEME32(K []byte, T[]byte, P []byte) (C []byte) {
+func TransformEME32(K []byte, T []byte, P []byte, direction int) (C []byte) {
 	aesCipher, err := aes.NewCipher(K)
 	if err != nil {
 		panic(err)
@@ -55,29 +67,29 @@ func EncryptEME32(K []byte, T[]byte, P []byte) (C []byte) {
 	aesCipher.Encrypt(zero, zero)
 	L := multByTwo(zero)
 
-	for j := 0; j <32; j++ {
-		Pj := P[j*16:(j+1)*16]
+	for j := 0; j < 32; j++ {
+		Pj := P[j*16 : (j+1)*16]
 		/* PPj = 2**(j-1)*L xor Pj */
 		PPj := xorBlocks(Pj, L)
 		/* PPPj = AESenc(K; PPj) */
-		aesCipher.Encrypt(C[j*16:(j+1)*16], PPj)
+		transformAES(C[j*16:(j+1)*16], PPj, direction, aesCipher)
 		L = multByTwo(L)
 	}
 
 	/* MP =(xorSum PPPj) xor T */
 	MP := xorBlocks(C[0:16], T)
-	for j := 1; j<32; j++ {
+	for j := 1; j < 32; j++ {
 		MP = xorBlocks(MP, C[j*16:(j+1)*16])
 	}
 
 	/* MC = AESenc(K; MP) */
 	MC := make([]byte, 16)
-	aesCipher.Encrypt(MC, MP)
+	transformAES(MC, MP, direction, aesCipher)
 
 	/* M = MP xor MC */
 	M := xorBlocks(MP, MC)
 
-	for j:=1; j<32; j++ {
+	for j := 1; j < 32; j++ {
 		M = multByTwo(M)
 		/* CCCj = 2**(j-1)*M xor PPPj */
 		CCCj := xorBlocks(C[j*16:(j+1)*16], M)
@@ -86,16 +98,16 @@ func EncryptEME32(K []byte, T[]byte, P []byte) (C []byte) {
 
 	/* CCC1 = (xorSum CCCj) xor T xor MC */
 	CCC1 := xorBlocks(MC, T)
-	for j := 1; j <32; j++ {
+	for j := 1; j < 32; j++ {
 		CCC1 = xorBlocks(CCC1, C[j*16:(j+1)*16])
 	}
 	copy(C[0:16], CCC1)
 
 	/* reset L = 2*AESenc(K; 0) */
 	L = multByTwo(zero)
-	for j := 0; j<32; j++ {
+	for j := 0; j < 32; j++ {
 		/* CCj = AES-enc(K; CCCj) */
-		aesCipher.Encrypt(C[j*16:(j+1)*16], C[j*16:(j+1)*16])
+		transformAES(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, aesCipher)
 		/* Cj = 2**(j-1)*L xor CCj */
 		Cj := xorBlocks(C[j*16:(j+1)*16], L)
 		copy(C[j*16:(j+1)*16], Cj)
