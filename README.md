@@ -5,7 +5,7 @@ EME (ECB-Mix-ECB) is a wide-block encryption mode developed by Halevi
 and Rogaway in 2003 [eme].
 
 EME uses multiple invocations of a block cipher to construct a new
-cipher of arbitrary block size (in multiples of 16 byte).
+cipher of bigger block size (in multiples of 16 bytes, up to 2048 bytes).
 
 This is an implementation of EME in Go.
 
@@ -67,5 +67,5 @@ http://www.google.com/patents/US20040131182
 Encryption for Shared Storage Media*  
 IEEE, Dec 2008  
 http://siswg.net/index2.php?option=com_docman&task=doc_view&gid=156&Itemid=41  
-Note: This is a draft version. The final version not freely available
+Note: This is a draft version. The final version is not freely available
 and must be bought from IEEE.
