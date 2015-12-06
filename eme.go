@@ -43,9 +43,9 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 	}
 }
 
-// bcTransform - encrypt or decrypt (according to "direction") using block
-// cipher "bc"
-func bcTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
+// aesTransform - encrypt or decrypt (according to "direction") using block
+// cipher "bc" (typically AES)
+func aesTransform(dst []byte, src []byte, direction int, bc cipher.Block) {
 	if direction == directionEncrypt {
 		bc.Encrypt(dst, src)
 		return
@@ -111,7 +111,7 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 		/* PPj = 2**(j-1)*L xor Pj */
 		xorBlocks(PPj, Pj, LTable[j])
 		/* PPPj = AESenc(K; PPj) */
-		bcTransform(C[j*16:(j+1)*16], PPj, direction, bc)
+		aesTransform(C[j*16:(j+1)*16], PPj, direction, bc)
 	}
 
 	/* MP =(xorSum PPPj) xor T */
@@ -123,7 +123,7 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 
 	/* MC = AESenc(K; MP) */
 	MC := make([]byte, 16)
-	bcTransform(MC, MP, direction, bc)
+	aesTransform(MC, MP, direction, bc)
 
 	/* M = MP xor MC */
 	M := make([]byte, 16)
@@ -146,7 +146,7 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction int) (C []byte) {
 
 	for j := 0; j < m; j++ {
 		/* CCj = AES-enc(K; CCCj) */
-		bcTransform(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
+		aesTransform(C[j*16:(j+1)*16], C[j*16:(j+1)*16], direction, bc)
 		/* Cj = 2**(j-1)*L xor CCj */
 		xorBlocks(C[j*16:(j+1)*16], C[j*16:(j+1)*16], LTable[j])
 	}
