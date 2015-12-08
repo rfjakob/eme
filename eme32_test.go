@@ -79,7 +79,7 @@ var buf9F2E = []byte{
 
 func TestEnc512(t *testing.T) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = make([]byte, 32)   // all-zero
 	v.tweak = make([]byte, 16) // all-zero
 	v.in = make([]byte, 512)   // all-zero
@@ -91,7 +91,7 @@ func TestEnc512(t *testing.T) {
 // Encrypt 100 times
 func TestEnc512x100(t *testing.T) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = []byte{
 		0x9F, 0x2E, 0x6C, 0x3D, 0xAE, 0xCA, 0xE7, 0x9E, 0x88, 0x39, 0xB0, 0x58, 0x8F, 0xF3, 0x78, 0xCD,
 		0x06, 0x68, 0x97, 0x0B, 0x95, 0x69, 0x1C, 0xB0, 0x01, 0x82, 0xB9, 0xE3, 0x4C, 0xD6, 0x58, 0xED}
@@ -182,7 +182,7 @@ var buf0809 = []byte{
 
 func TestDec512(t *testing.T) {
 	var v testVec
-	v.dir = directionDecrypt
+	v.dir = DirectionDecrypt
 	v.key = make([]byte, 32)   // all-zero
 	v.tweak = make([]byte, 16) // all-zero
 	v.in = make([]byte, 512)   // all-zero
@@ -194,7 +194,7 @@ func TestDec512(t *testing.T) {
 // Decrypt 100 times
 func TestDec512x100(t *testing.T) {
 	var v testVec
-	v.dir = directionDecrypt
+	v.dir = DirectionDecrypt
 	v.key = []byte{
 		0x08, 0x09, 0x05, 0xDE, 0xE8, 0xEB, 0xCC, 0x89, 0xF6, 0x8B, 0xD1, 0xAF, 0x63, 0x5D, 0xB3, 0xF5,
 		0xB6, 0x0C, 0x2F, 0x13, 0xF7, 0xC7, 0x68, 0xFC, 0xEB, 0x12, 0x20, 0xF6, 0xC2, 0x27, 0xFD, 0x83}
@@ -250,7 +250,7 @@ func TestDec512x100(t *testing.T) {
 
 func BenchmarkEnc512Precompute(b *testing.B) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = make([]byte, 32)
 	v.tweak = make([]byte, 16)
 	v.in = make([]byte, 512)
@@ -270,7 +270,7 @@ func BenchmarkEnc512Precompute(b *testing.B) {
 
 func BenchmarkEnc512(b *testing.B) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = make([]byte, 32)
 	v.tweak = make([]byte, 16)
 	v.in = make([]byte, 512)
@@ -289,7 +289,7 @@ func BenchmarkEnc512(b *testing.B) {
 
 func BenchmarkDec512(b *testing.B) {
 	var v testVec
-	v.dir = directionDecrypt
+	v.dir = DirectionDecrypt
 	v.key = make([]byte, 32)
 	v.tweak = make([]byte, 16)
 	v.in = make([]byte, 512)

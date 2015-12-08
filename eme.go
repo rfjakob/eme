@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	directionEncrypt = true
-	directionDecrypt = false
+	DirectionEncrypt = true
+	DirectionDecrypt = false
 )
 
 // multByTwo - GF multiplication as specified in the EME-32 draft
@@ -46,10 +46,10 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 // aesTransform - encrypt or decrypt (according to "direction") using block
 // cipher "bc" (typically AES)
 func aesTransform(dst []byte, src []byte, direction bool, bc cipher.Block) {
-	if direction == directionEncrypt {
+	if direction == DirectionEncrypt {
 		bc.Encrypt(dst, src)
 		return
-	} else if direction == directionDecrypt {
+	} else if direction == DirectionDecrypt {
 		bc.Decrypt(dst, src)
 		return
 	} else {
@@ -95,8 +95,9 @@ func (lc *lCacheContainer) clear() {
 
 var lTableCache lCacheContainer
 
-// Transform - EME-encrypt or EME-decrypt (according to "direction") the data
-// in "P" with the block ciper "bc" under tweak "T".
+// Transform - EME-encrypt or EME-decrypt, according to "direction"
+// (defined in the constants directionEncrypt and directionDecrypt).
+// The data in "P" is en- or decrypted with the block ciper "bc" under tweak "T".
 // The result is returned in a freshly allocated slice.
 func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
 	if bc.BlockSize() != 16 {

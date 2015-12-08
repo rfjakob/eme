@@ -19,7 +19,7 @@ func unhex(s string) []byte {
 
 func TestEnc16(t *testing.T) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = make([]byte, 32)   // all-zero
 	v.tweak = make([]byte, 16) // all-zero
 	v.in = make([]byte, 16)    // all-zero
@@ -29,7 +29,7 @@ func TestEnc16(t *testing.T) {
 
 func TestEnc2048(t *testing.T) {
 	var v testVec
-	v.dir = directionEncrypt
+	v.dir = DirectionEncrypt
 	v.key = make([]byte, 32)   // all-zero
 	v.tweak = make([]byte, 16) // all-zero
 	v.in = make([]byte, 2048)  // all-zero
