@@ -248,26 +248,6 @@ func TestDec512x100(t *testing.T) {
 	}
 }
 
-func BenchmarkEnc512Precompute(b *testing.B) {
-	var v testVec
-	v.dir = DirectionEncrypt
-	v.key = make([]byte, 32)
-	v.tweak = make([]byte, 16)
-	v.in = make([]byte, 512)
-	b.SetBytes(int64(len(v.in)))
-
-	bc, err := aes.NewCipher(v.key)
-	if err != nil {
-		b.Fatal(err)
-	}
-	lTableCache.precompute(bc)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		Transform(bc, v.tweak, v.in, v.dir)
-	}
-	lTableCache.clear()
-}
-
 func BenchmarkEnc512(b *testing.B) {
 	var v testVec
 	v.dir = DirectionEncrypt

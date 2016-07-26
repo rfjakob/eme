@@ -75,26 +75,6 @@ func tabulateL(bc cipher.Block, m int) [][]byte {
 	return LTable
 }
 
-type lCacheContainer struct {
-	LTable  [][]byte
-	enabled bool
-}
-
-// precompute LTable for maximum length
-// Note that LTable depends on the AES key, so you must run precompute or clear
-// when the key changes.
-func (lc *lCacheContainer) precompute(bc cipher.Block) {
-	lc.LTable = tabulateL(bc, 16*8) // 16*8 = maximum length
-	lc.enabled = true
-}
-
-// clear LTable cache
-func (lc *lCacheContainer) clear() {
-	lc.enabled = false
-}
-
-var lTableCache lCacheContainer
-
 // Transform - EME-encrypt or EME-decrypt, according to "direction"
 // (defined in the constants directionEncrypt and directionDecrypt).
 // The data in "P" is en- or decrypted with the block ciper "bc" under tweak "T".
@@ -116,12 +96,7 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
 
 	C = make([]byte, len(P))
 
-	var LTable [][]byte
-	if lTableCache.enabled {
-		LTable = lTableCache.LTable
-	} else {
-		LTable = tabulateL(bc, m)
-	}
+	LTable := tabulateL(bc, m)
 
 	PPj := make([]byte, 16)
 	for j := 0; j < m; j++ {
