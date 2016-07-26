@@ -103,6 +103,9 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
 	if bc.BlockSize() != 16 {
 		log.Panicf("Using a block size other than 16 is not implemented")
 	}
+	if len(T) != 16 {
+		log.Panicf("Tweak must be 16 bytes long, is %d", len(T))
+	}
 	if len(P)%16 != 0 {
 		log.Panicf("Data length %d is not a multiple of 16", len(P))
 	}
