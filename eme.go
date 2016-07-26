@@ -1,6 +1,6 @@
-// EME (ECB-Mix-ECB) is a wide-block encryption mode presented in the 2003 paper
-// "A Parallelizable Enciphering Mode" by Halevi and Rogaway.
-// This is an implementation of EME in Go.
+// EME (ECB-Mix-ECB) is a length-preserving wide-block encryption mode. It was
+// presented in the 2003 paper "A Parallelizable Enciphering Mode" by Halevi
+// and Rogaway.
 package eme
 
 import (
@@ -11,7 +11,9 @@ import (
 type directionConst bool
 
 const (
+	// Encrypt "inputData"
 	DirectionEncrypt = directionConst(true)
+	// Decrypt "inputData"
 	DirectionDecrypt = directionConst(false)
 )
 
@@ -77,9 +79,19 @@ func tabulateL(bc cipher.Block, m int) [][]byte {
 
 // Transform - EME-encrypt or EME-decrypt, according to "direction"
 // (defined in the constants DirectionEncrypt and DirectionDecrypt).
-// The data in "P" is en- or decrypted with the block ciper "bc" under tweak "T".
+// The data in "inputData" is en- or decrypted with the block ciper "bc" under
+// "tweak" (also known as IV).
 // The result is returned in a freshly allocated slice.
-func Transform(bc cipher.Block, T []byte, P []byte, direction directionConst) (C []byte) {
+func Transform(bc cipher.Block, tweak []byte, inputData []byte, direction directionConst) []byte {
+	// In the paper, the tweak is just called "T". Call it the same here to
+	// make following the paper easy.
+	T := tweak
+	// In the paper, the plaintext data is called "P" and the ciphertext is
+	// called "C". Because encryption and decryption are virtually indentical,
+	// we share the code and always call the input data "P" and the output data
+	// "C", regardless of the direction.
+	P := inputData
+
 	if bc.BlockSize() != 16 {
 		log.Panicf("Using a block size other than 16 is not implemented")
 	}
@@ -94,7 +106,7 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction directionConst) (C
 		log.Panicf("EME operates on 1 to %d block-cipher blocks, you passed %d", 16*8, m)
 	}
 
-	C = make([]byte, len(P))
+	C := make([]byte, len(P))
 
 	LTable := tabulateL(bc, m)
 
