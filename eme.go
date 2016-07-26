@@ -107,11 +107,11 @@ func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
 		log.Panicf("Tweak must be 16 bytes long, is %d", len(T))
 	}
 	if len(P)%16 != 0 {
-		log.Panicf("Data length %d is not a multiple of 16", len(P))
+		log.Panicf("Data P must be a multiple of 16 long, is %d", len(P))
 	}
 	m := len(P) / 16
 	if m == 0 || m > 16*8 {
-		log.Panicf("EME operates on 1-%d block-cipher blocks", 16*8)
+		log.Panicf("EME operates on 1 to %d block-cipher blocks, you passed %d", 16*8, m)
 	}
 
 	C = make([]byte, len(P))
