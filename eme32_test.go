@@ -12,7 +12,7 @@ import (
 
 type testVec struct {
 	// direction
-	dir bool
+	dir directionConst
 	// AES key
 	key []byte
 	// IV, in EME called tweak

@@ -8,9 +8,11 @@ import (
 	"log"
 )
 
+type directionConst bool
+
 const (
-	DirectionEncrypt = true
-	DirectionDecrypt = false
+	DirectionEncrypt = directionConst(true)
+	DirectionDecrypt = directionConst(false)
 )
 
 // multByTwo - GF multiplication as specified in the EME-32 draft
@@ -45,15 +47,13 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 
 // aesTransform - encrypt or decrypt (according to "direction") using block
 // cipher "bc" (typically AES)
-func aesTransform(dst []byte, src []byte, direction bool, bc cipher.Block) {
+func aesTransform(dst []byte, src []byte, direction directionConst, bc cipher.Block) {
 	if direction == DirectionEncrypt {
 		bc.Encrypt(dst, src)
 		return
 	} else if direction == DirectionDecrypt {
 		bc.Decrypt(dst, src)
 		return
-	} else {
-		log.Panicf("unknown direction %d", direction)
 	}
 }
 
@@ -76,10 +76,10 @@ func tabulateL(bc cipher.Block, m int) [][]byte {
 }
 
 // Transform - EME-encrypt or EME-decrypt, according to "direction"
-// (defined in the constants directionEncrypt and directionDecrypt).
+// (defined in the constants DirectionEncrypt and DirectionDecrypt).
 // The data in "P" is en- or decrypted with the block ciper "bc" under tweak "T".
 // The result is returned in a freshly allocated slice.
-func Transform(bc cipher.Block, T []byte, P []byte, direction bool) (C []byte) {
+func Transform(bc cipher.Block, T []byte, P []byte, direction directionConst) (C []byte) {
 	if bc.BlockSize() != 16 {
 		log.Panicf("Using a block size other than 16 is not implemented")
 	}
