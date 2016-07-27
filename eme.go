@@ -81,7 +81,20 @@ func tabulateL(bc cipher.Block, m int) [][]byte {
 // (defined in the constants DirectionEncrypt and DirectionDecrypt).
 // The data in "inputData" is en- or decrypted with the block ciper "bc" under
 // "tweak" (also known as IV).
-// The result is returned in a freshly allocated slice.
+//
+// The tweak is used to randomize the encryption in the same way as an
+// IV.  A use of this encryption mode envisioned by the authors of the
+// algorithm was to encrypt each sector of a disk, with the tweak
+// being the sector number.  If you encipher the same data with the
+// same tweak you will get the same ciphertext.
+//
+// The result is returned in a freshly allocated slice of the same
+// size as inputData.
+//
+// Limitations: This only works for ciphers with block size 16.  The
+// size of the tweak slice must also be 16. The inputData must also be
+// a multiple of 16. If any of these pre-conditions are not met, the
+// function will panic.
 func Transform(bc cipher.Block, tweak []byte, inputData []byte, direction directionConst) []byte {
 	// In the paper, the tweak is just called "T". Call it the same here to
 	// make following the paper easy.
