@@ -1,4 +1,4 @@
-EME for Go [![Build Status](https://drone.io/github.com/rfjakob/eme/status.png)](https://drone.io/github.com/rfjakob/eme/latest) [![GoDoc](https://godoc.org/github.com/rfjakob/eme?status.svg)](https://godoc.org/github.com/rfjakob/eme) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+EME for Go [![Build Status](https://travis-ci.org/rfjakob/eme.svg?branch=master)](https://travis-ci.org/rfjakob/eme) [![GoDoc](https://godoc.org/github.com/rfjakob/eme?status.svg)](https://godoc.org/github.com/rfjakob/eme) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 ==========
 
 **EME** (ECB-Mix-ECB or, clearer, **Encrypt-Mix-Encrypt**) is a wide-block
