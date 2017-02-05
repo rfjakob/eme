@@ -1,7 +1,8 @@
 EME for Go [![Build Status](https://drone.io/github.com/rfjakob/eme/status.png)](https://drone.io/github.com/rfjakob/eme/latest) [![GoDoc](https://godoc.org/github.com/rfjakob/eme?status.svg)](https://godoc.org/github.com/rfjakob/eme) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 ==========
 
-EME (ECB-Mix-ECB) is a wide-block encryption mode developed by Halevi
+**EME** (ECB-Mix-ECB or, clearer, **Encrypt-Mix-Encrypt**) is a wide-block
+encryption mode developed by Halevi
 and Rogaway in 2003 [eme]. (see references below)
 
 EME uses multiple invocations of a block cipher to construct a new
@@ -15,6 +16,10 @@ Quoting from the original [eme] paper:
 > to solve the disk-sector encryption problem. The algorithm entails two layers of ECB encryption
 > and a “lightweight mixing” in between. We prove EME secure, in the reduction-based sense of
 > modern cryptography.
+
+Figure 2 from the [eme] paper shows an overview of the transformation:
+
+![Figure 2 form [eme]](paper-eme-fig2.png)
 
 This is an implementation of EME in Go, complete with test vectors from IEEE.
 
