@@ -20,7 +20,7 @@ Quoting from the original _[eme]_ paper:
 
 Figure 2 from the _[eme]_ paper shows an overview of the transformation:
 
-[![Figure 2 form [eme]](paper-eme-fig2.png)](https://eprint.iacr.org/2003/147.pdf)
+[![Figure 2 form [eme]](paper-eme-fig2.png)](#)
 
 This is an implementation of EME in Go, complete with test vectors from IEEE.
 
