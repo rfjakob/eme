@@ -19,7 +19,7 @@ Quoting from the original [eme] paper:
 
 Figure 2 from the [eme] paper shows an overview of the transformation:
 
-![Figure 2 form [eme]](paper-eme-fig2.png)
+[![Figure 2 form [eme]](paper-eme-fig2.png)](https://eprint.iacr.org/2003/147.pdf)
 
 This is an implementation of EME in Go, complete with test vectors from IEEE.
 
