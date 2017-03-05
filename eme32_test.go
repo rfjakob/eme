@@ -28,6 +28,7 @@ func verifyTestVec(v testVec, t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	// Transform and check expected data
 	out := Transform(bc, v.tweak, v.in, v.dir)
 	if bytes.Compare(v.out, out) != 0 {
@@ -36,6 +37,24 @@ func verifyTestVec(v testVec, t *testing.T) {
 	}
 	// Transform the other way and check that we get back the original data
 	in := Transform(bc, v.tweak, out, !v.dir)
+	if bytes.Compare(v.in, in) != 0 {
+		fmt.Println(hex.EncodeToString(out))
+		t.Errorf("Different content in reverse verify")
+	}
+
+	// Once more using the eme.New() interface.
+	e := New(bc)
+	if v.dir == DirectionDecrypt {
+		out = e.Decrypt(v.tweak, v.in)
+		in = e.Encrypt(v.tweak, out)
+	} else {
+		out = e.Encrypt(v.tweak, v.in)
+		in = e.Decrypt(v.tweak, out)
+	}
+	if bytes.Compare(v.out, out) != 0 {
+		fmt.Println(hex.EncodeToString(out))
+		t.Errorf("Different content in forward verify")
+	}
 	if bytes.Compare(v.in, in) != 0 {
 		fmt.Println(hex.EncodeToString(out))
 		t.Errorf("Different content in reverse verify")
