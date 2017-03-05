@@ -189,8 +189,8 @@ type EMECipher struct {
 
 // New returns a new EMECipher object. "bc" must have a block size of 16,
 // or subsequent calls to Encrypt and Decrypt will panic.
-func New(bc cipher.Block) EMECipher {
-	return EMECipher{
+func New(bc cipher.Block) *EMECipher {
+	return &EMECipher{
 		bc: bc,
 	}
 }
