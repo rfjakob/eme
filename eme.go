@@ -181,26 +181,31 @@ func Transform(bc cipher.Block, tweak []byte, inputData []byte, direction direct
 	return C
 }
 
-// EMECipher provides EME-Encryption and -Decryption functions that are more
+type EMECipher interface {
+	Encrypt(tweak []byte, inputData []byte) []byte
+	Decrypt(tweak []byte, inputData []byte) []byte
+}
+
+// emeCipher provides EME-Encryption and -Decryption functions that are more
 // convenient than calling Transform directly.
-type EMECipher struct {
+type emeCipher struct {
 	bc cipher.Block
 }
 
-// New returns a new EMECipher object. "bc" must have a block size of 16,
+// New returns a new emeCipher object. "bc" must have a block size of 16,
 // or subsequent calls to Encrypt and Decrypt will panic.
-func New(bc cipher.Block) *EMECipher {
-	return &EMECipher{
+func New(bc cipher.Block) *emeCipher {
+	return &emeCipher{
 		bc: bc,
 	}
 }
 
 // Encrypt is equivalent to calling Transform with direction=DirectionEncrypt.
-func (e *EMECipher) Encrypt(tweak []byte, inputData []byte) []byte {
+func (e *emeCipher) Encrypt(tweak []byte, inputData []byte) []byte {
 	return Transform(e.bc, tweak, inputData, DirectionEncrypt)
 }
 
 // Decrypt is equivalent to calling Transform with direction=DirectionDecrypt.
-func (e *EMECipher) Decrypt(tweak []byte, inputData []byte) []byte {
+func (e *emeCipher) Decrypt(tweak []byte, inputData []byte) []byte {
 	return Transform(e.bc, tweak, inputData, DirectionDecrypt)
 }
