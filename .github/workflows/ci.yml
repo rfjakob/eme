@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '0 12 * * *' # Every day noon UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '*' # Build on latest Go release so we catch breakage
+
+    - name: go version
+      run: go version
+
+    - name: Build & Test
+      run: bash -x test.bash
