@@ -49,39 +49,43 @@ References
 #### [eme]
 *A Parallelizable Enciphering Mode*  
 Shai Halevi, Phillip Rogaway, 28 Jul 2003  
-https://eprint.iacr.org/2003/147.pdf  
+https://eprint.iacr.org/2003/147.pdf ([archive.org snapshot](https://web.archive.org/web/20210506160350/https://eprint.iacr.org/2003/147.pdf))
 
 Note: This is the original EME paper. EME is specified for an arbitrary
 number of block-cipher blocks. EME-32 is a concrete implementation of
 EME with a fixed length of 32 AES blocks.
 
 #### [eme-32-email]
-*Re: EME-32-AES with editorial comments*  
+*Re: EME-32-AES with editorial comments*, announcement email with [[eme-32-pdf]](#eme-32-pdf) attachments  
 Shai Halevi, 07 Jun 2005  
-http://grouper.ieee.org/groups/1619/email/msg00310.html
+~~http://grouper.ieee.org/groups/1619/email/msg00310.html~~ (broken link as of July 2021, [archive.org snapshot](http://web.archive.org/web/20081227091850/http://grouper.ieee.org/groups/1619/email/msg00310.html)) (attachment: `EME-32-AES-Jun-05.pdf`=`pdf00020.pdf`),  
+~~http://grouper.ieee.org/groups/1619/email/msg00309.html~~
+(broken link as of July 2021, [archive.org snapshot](http://web.archive.org/web/20081228013334/http://grouper.ieee.org/groups/1619/email/msg00309.html))
+(attachment: `EME-32-AES-Jun-05.doc`=`doc00011.doc`)
 
 #### [eme-32-pdf]
-*Draft Standard for Tweakable Wide-block Encryption*  
+*Draft Standard for Tweakable Wide-block Encryption*, `EME-32-AES-Jun-05.{doc,pdf}`
 Shai Halevi, 02 June 2005  
-http://grouper.ieee.org/groups/1619/email/pdf00020.pdf  
+`EME-32-AES-Jun-05.pdf` ... ~~http://grouper.ieee.org/groups/1619/email/pdf00020.pdf~~ (broken link as of July 2021, no archive.org snapshot available, [baidu mirror](https://wenku.baidu.com/view/e6fc8d43be1e650e53ea9907.html))  
+`EME-32-AES-Jun-05.doc` ... ~~http://grouper.ieee.org/groups/1619/email/doc00011.doc~~ (broken link as of July 2021, [archive.org snapshot of external mirror](http://web.archive.org/web/20210701125726/https://samifar.in/code/crypto/eme-32-aes/doc00011.doc))
 
-Note: This is the latest version of the EME-32 draft that I could find. It
+Note: This is the latest version of the EME-32 draft that I could find as of Dec 2015. It
 includes test vectors and C source code.
 
 #### [eme-32-testvec]
 *Re: Test vectors for LRW and EME*  
 Shai Halevi, 16 Nov 2004  
-http://grouper.ieee.org/groups/1619/email/msg00218.html
+~~http://grouper.ieee.org/groups/1619/email/msg00218.html~~ (broken link as of July 2021, [archive.org snapshot](https://web.archive.org/web/20070305060551/http://grouper.ieee.org/groups/1619/email/msg00218.html))
 
 #### [emestar]
 *EME\*: extending EME to handle arbitrary-length messages with associated data*  
 Shai Halevi, 27 May 2004  
-https://eprint.iacr.org/2004/125.pdf
+https://eprint.iacr.org/2004/125.pdf ([archive.org snapshot](https://web.archive.org/web/20160826083914/http://eprint.iacr.org/2004/125.pdf))
 
 #### [patabandon]
 *Re: [P1619-2] Non-awareness patent statement made by UC Davis*  
 Mat Ball, 26 Nov 2007  
-http://grouper.ieee.org/groups/1619/email-2/msg00005.html
+~~http://grouper.ieee.org/groups/1619/email-2/msg00005.html~~ (broken link as of July 2021, [archive.org snapshot](https://web.archive.org/web/20110611145815/http://grouper.ieee.org/groups/1619/email-2/msg00005.html))
 
 #### [patappl]
 *Block cipher mode of operation for constructing a wide-blocksize block cipher from a conventional block cipher*  
@@ -91,10 +95,10 @@ http://www.google.com/patents/US20040131182
 #### [p1619-2]
 *IEEE P1619.2™/D9 Draft Standard for Wide-Block Encryption for Shared Storage Media*  
 IEEE, Dec 2008  
-http://siswg.net/index2.php?option=com_docman&task=doc_view&gid=156&Itemid=41  
+~~http://siswg.net/index2.php?option=com_docman&task=doc_view&gid=156&Itemid=41~~ (broken link as of July 2021, [archive.org snapshot](https://web.archive.org/web/20171018232831/http://siswg.net/index2.php?option=com_docman&task=doc_view&gid=156&Itemid=41))
 
 Note: This is a draft version. The final version is not freely available
-and must be bought from IEEE.
+and must be [bought from IEEE](https://ieeexplore.ieee.org/document/5729263).
 
 Package Changelog
 -----------------
