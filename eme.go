@@ -103,7 +103,7 @@ func tabulateL(bc cipher.Block, m int) [][]byte {
 // If any of these pre-conditions are not met, the function will panic.
 //
 // Note that you probably don't want to call this function directly and instead
-// use eme.New(), which provides conventient wrappers.
+// use eme.New(), which provides convenient wrappers.
 func Transform(bc cipher.Block, tweak []byte, inputData []byte, direction directionConst) []byte {
 	// In the paper, the tweak is just called "T". Call it the same here to
 	// make following the paper easy.
