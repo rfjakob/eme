@@ -1,4 +1,4 @@
-EME for Go [![CI](https://github.com/rfjakob/eme/actions/workflows/ci.yml/badge.svg)](https://github.com/rfjakob/eme/actions/workflows/ci.yml) [![GoDoc](https://godoc.org/github.com/rfjakob/eme?status.svg)](https://godoc.org/github.com/rfjakob/eme) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+EME for Go [![CI](https://github.com/rfjakob/eme/actions/workflows/ci.yml/badge.svg)](https://github.com/rfjakob/eme/actions/workflows/ci.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/rfjakob/eme.svg)](https://pkg.go.dev/github.com/rfjakob/eme) ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 ==========
 
 **EME** (ECB-Mix-ECB or, clearer, **Encrypt-Mix-Encrypt**) is a wide-block
