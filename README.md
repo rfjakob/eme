@@ -66,6 +66,19 @@ How to run the self-tests:
 	PASS
 	ok  	github.com/rfjakob/eme	0.005s
 
+How to run the benchmarks:
+
+	$ ./benchmark.bash
+	goos: linux
+	goarch: amd64
+	pkg: github.com/rfjakob/eme
+	cpu: Intel(R) Core(TM) i5-3470 CPU @ 3.20GHz
+	BenchmarkEnc512-4   	  142634	      8161 ns/op	  62.73 MB/s
+	BenchmarkDec512-4   	  140930	      8245 ns/op	  62.09 MB/s
+	PASS
+	ok  	github.com/rfjakob/eme	2.508s
+
+
 Other implementations
 ---------------------
 
