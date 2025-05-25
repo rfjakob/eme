@@ -43,6 +43,29 @@ that has built-in handling for data that is not a multiple of 16 bytes
 long.  
 EME2 has been selected for standardization in IEEE P1619.2 [[p1619.2]](#p1619.2).
 
+How to use
+----------
+
+Ho to use the eme in you app: Use `eme.New`: https://pkg.go.dev/github.com/rfjakob/eme#New
+
+How to run the self-tests:
+
+	$ go test -v
+	=== RUN   TestEnc512
+	--- PASS: TestEnc512 (0.00s)
+	=== RUN   TestEnc512x100
+	--- PASS: TestEnc512x100 (0.00s)
+	=== RUN   TestDec512
+	--- PASS: TestDec512 (0.00s)
+	=== RUN   TestDec512x100
+	--- PASS: TestDec512x100 (0.00s)
+	=== RUN   TestEnc16
+	--- PASS: TestEnc16 (0.00s)
+	=== RUN   TestEnc2048
+	--- PASS: TestEnc2048 (0.00s)
+	PASS
+	ok  	github.com/rfjakob/eme	0.005s
+
 References
 ----------
 
