@@ -10,6 +10,7 @@ package eme
 
 import (
 	"crypto/cipher"
+	"crypto/subtle"
 	"log"
 )
 
@@ -46,10 +47,7 @@ func xorBlocks(out []byte, in1 []byte, in2 []byte) {
 	if len(in1) != len(in2) {
 		log.Panicf("len(in1)=%d is not equal to len(in2)=%d", len(in1), len(in2))
 	}
-
-	for i := range in1 {
-		out[i] = in1[i] ^ in2[i]
-	}
+	subtle.XORBytes(out, in1, in2)
 }
 
 // aesTransform - encrypt or decrypt (according to "direction") using block
