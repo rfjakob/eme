@@ -87,6 +87,8 @@ Some other EME implementations I am aware of (PRs for more accepted):
 * JavaScript (library): https://github.com/fyears/eme / https://www.npmjs.com/package/@fyears/eme
 * C++ (part of cppcryptfs): https://github.com/bailey27/cppcryptfs/blob/master/libcppcryptfs/crypt/eme.cpp
 * Rust (library): https://github.com/B4dM4n/eme-mode-rs / https://crates.io/crates/eme-mode
+* Python (part of gocryptfs-inspect): https://github.com/maxpat78/gocryptfs-inspect/blob/master/aes256eme.py
+* Java (library): https://github.com/alexey-lapin/eme-java
 
 References
 ----------
