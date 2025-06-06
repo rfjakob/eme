@@ -8,6 +8,16 @@ and Rogaway in 2003 [[eme]](#eme).
 EME uses multiple invocations of a block cipher to construct a new
 cipher of bigger block size (in multiples of 16 bytes, up to 2048 bytes).
 
+Key advantages:
+
+* Deterministic encryption - no random nonce
+* Zero overhead - zero ciphertext expansion
+  * But this also means there is no authentication! The application
+    must validate decrypted data.
+* True wide-block encryption. Changing a single bit randomizes the
+  whole ciphertext.
+  * This is not the case for AES-XTS, for example.
+
 Quoting from the original [[eme]](#eme) paper:
 
 > We describe a block-cipher mode of operation, EME, that turns an n-bit block cipher into
