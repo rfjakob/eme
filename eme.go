@@ -23,7 +23,8 @@ const (
 	DirectionDecrypt = directionConst(false)
 )
 
-// multByTwo - GF multiplication as specified in the EME-32 draft
+// multByTwo - GF multiplication as specified in the EME-32 draft,
+// "Figure 4.1. C code for the multByTwo procedure"
 func multByTwo(out []byte, in []byte) {
 	if len(in) != 16 {
 		panic("len must be 16")
@@ -31,14 +32,20 @@ func multByTwo(out []byte, in []byte) {
 	tmp := make([]byte, 16)
 
 	tmp[0] = 2 * in[0]
-	if in[15] >= 128 {
-		tmp[0] = tmp[0] ^ 135
-	}
+	// Constant-time version of this if condition:
+	//
+	// 	if in[15] >= 128 {
+	// 		tmp[0] = tmp[0] ^ 135
+	// 	}
+	tmp[0] = tmp[0] ^ (135 & byte(-(in[15] >> 7)))
 	for j := 1; j < 16; j++ {
 		tmp[j] = 2 * in[j]
-		if in[j-1] >= 128 {
-			tmp[j] += 1
-		}
+		// Constant-time version of this if condition:
+		//
+		// 	if in[j-1] >= 128 {
+		// 		tmp[j] += 1
+		// 	}
+		tmp[j] += in[j-1] >> 7
 	}
 	copy(out, tmp)
 }
