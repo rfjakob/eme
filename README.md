@@ -160,6 +160,12 @@ and must be [bought from IEEE](https://ieeexplore.ieee.org/document/5729263).
 Package Changelog
 -----------------
 
+v1.2.0, 2026-01-25
+* Convert if conditions in multByTwo() to constant-time operations
+  ([#8](https://github.com/rfjakob/eme/issues/8))
+* Update broken links in README, add links to other EME implementions
+* Switch to `subtle.XORBytes` (45802ed4fb60f60)
+
 v1.1.2, 2021-06-27
 * Add `go.mod` file
 * Switch from Travis CI to Github Actions
