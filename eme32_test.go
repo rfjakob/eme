@@ -31,13 +31,13 @@ func verifyTestVec(v testVec, t *testing.T) {
 
 	// Transform and check expected data
 	out := Transform(bc, v.tweak, v.in, v.dir)
-	if bytes.Compare(v.out, out) != 0 {
+	if !bytes.Equal(v.out, out) {
 		fmt.Println(hex.EncodeToString(out))
 		t.Errorf("Different content in forward verify")
 	}
 	// Transform the other way and check that we get back the original data
 	in := Transform(bc, v.tweak, out, !v.dir)
-	if bytes.Compare(v.in, in) != 0 {
+	if !bytes.Equal(v.in, in) {
 		fmt.Println(hex.EncodeToString(out))
 		t.Errorf("Different content in reverse verify")
 	}
@@ -51,11 +51,11 @@ func verifyTestVec(v testVec, t *testing.T) {
 		out = e.Encrypt(v.tweak, v.in)
 		in = e.Decrypt(v.tweak, out)
 	}
-	if bytes.Compare(v.out, out) != 0 {
+	if !bytes.Equal(v.out, out) {
 		fmt.Println(hex.EncodeToString(out))
 		t.Errorf("Different content in forward verify")
 	}
-	if bytes.Compare(v.in, in) != 0 {
+	if !bytes.Equal(v.in, in) {
 		fmt.Println(hex.EncodeToString(out))
 		t.Errorf("Different content in reverse verify")
 	}
@@ -159,7 +159,7 @@ func TestEnc512x100(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		out = Transform(bc, v.tweak, out, v.dir)
 	}
-	if bytes.Compare(v.out, out) != 0 {
+	if !bytes.Equal(v.out, out) {
 		t.Errorf("Different content")
 	}
 }
@@ -262,7 +262,7 @@ func TestDec512x100(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		out = Transform(bc, v.tweak, out, v.dir)
 	}
-	if bytes.Compare(v.out, out) != 0 {
+	if !bytes.Equal(v.out, out) {
 		t.Errorf("Different content")
 	}
 }
